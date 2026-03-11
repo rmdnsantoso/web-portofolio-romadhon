@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
     // 1. Tembak file ke brankas Supabase
     const { data, error } = await supabaseAdmin.storage
-      .from('portfolio-images') // GANTI ini jika nama bucket-mu berbeda
+      .from('portofolio-images') // GANTI ini jika nama bucket-mu berbeda
       .upload(fileName, buffer, {
         contentType: file.type,
       });
