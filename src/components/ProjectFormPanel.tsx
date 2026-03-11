@@ -2,36 +2,70 @@
 
 import { useState } from "react";
 import { createProject } from "@/app/admin/actions";
-// 1. IMPORT KOMPONEN TOAST
 import ToastNotification from "./ToastNotification";
 
 export default function ProjectFormPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
-  // 2. STATE UNTUK TOAST NOTIFICATION
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  // Fungsi untuk menangani saat tombol "Save Project" ditekan
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsPending(true);
     
-    // TANGKAP DAN SIMPAN FORM SEBELUM AWAIT
     const form = event.currentTarget;
     const formData = new FormData(form);
     
-    // Panggil kurir Server Action
-    await createProject(formData); 
-    
-    setIsPending(false);
-    setIsOpen(false); // Tutup panel setelah sukses
-    form.reset(); // Kosongkan form menggunakan referensi yang sudah disimpan
+    // --- MULAI: LOGIKA UPLOAD SUPABASE ---
+    const imageFile = formData.get('imageFile') as File;
 
-    // 3. PANGGIL TOAST SETELAH LACI DITUTUP
-    setToastMessage("PROJECT DEPLOYED SUCCESSFULLY.");
-    setShowToast(true);
+    // Cek apakah user mengunggah file (ukurannya lebih dari 0 byte)
+    if (imageFile && imageFile.size > 0) {
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', imageFile);
+
+      try {
+        // Kirim ke API rahasia kita
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadFormData,
+        });
+        
+        const uploadData = await response.json();
+
+        if (uploadData.url) {
+          // Sukses! Timpa isian 'imageUrl' di formData dengan link Supabase
+          formData.set('imageUrl', uploadData.url);
+        } else {
+          throw new Error(uploadData.error || "Gagal upload");
+        }
+      } catch (error) {
+        console.error("Upload error:", error);
+        alert("Gagal mengunggah gambar ke server. Coba lagi.");
+        setIsPending(false);
+        return; // Hentikan proses simpan
+      }
+    }
+    // Jika tidak ada file, kode akan otomatis menggunakan teks dari input 'imageUrl' (Option 2)
+    // --- SELESAI: LOGIKA UPLOAD SUPABASE ---
+
+    // Panggil kurir Server Action dengan paket data yang sudah dimodifikasi
+    try {
+      await createProject(formData); 
+      
+      setIsOpen(false); 
+      form.reset(); 
+
+      setToastMessage("PROJECT DEPLOYED SUCCESSFULLY.");
+      setShowToast(true);
+    } catch (error) {
+      console.error("Database error:", error);
+      alert("Gagal menyimpan ke database.");
+    } finally {
+      setIsPending(false);
+    }
   }
 
   return (
@@ -64,6 +98,7 @@ export default function ProjectFormPanel() {
             <button 
               onClick={() => setIsOpen(false)}
               className="text-beige-200/50 hover:text-beige-100 text-sm uppercase tracking-widest"
+              type="button"
             >
               [ Close ]
             </button>
