@@ -1,11 +1,14 @@
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db" // Di Prisma 5, ini 100% sah dan aman!
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
+        
 
 model Project {
   id          String   @id @default(cuid())
