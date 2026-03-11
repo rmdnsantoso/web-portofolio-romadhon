@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db" // Di Prisma 5, ini 100% sah dan aman!
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  category    String
+  description String
+  techStack   String
+  imageUrl    String?  
+  liveUrl     String?
+  githubUrl   String?
+  status      String   @default("Draft")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model Profile {
+  id          String   @id @default("woozie-admin") 
+  name        String   @default("Romadhon Santoso")
+  role        String   @default("Web Developer & UI/UX Designer")
+  about       String?
+  avatarUrl   String?  // Bisa berisi URL internet atau path /uploads/foto.png
+  resumeUrl   String?  // Untuk file PDF CV/Resume
+  updatedAt   DateTime @updatedAt
+
+  // --- TAMBAHAN BARU ---
+  isMaintenance Boolean  @default(false) 
+  
+  createdAt     DateTime @default(now())
+}
+
+model Banner {
+  id          String   @id @default(cuid())
+  title       String
+  imageUrl    String   // Bisa URL internet atau path file lokal
+  isActive    Boolean  @default(true) // Sakelar untuk mematikan/menyalakan banner
+  createdAt   DateTime @default(now())
+}
