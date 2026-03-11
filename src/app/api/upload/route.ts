@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     // 2. Ambil URL publik dari file yang baru diupload
     const { data: publicUrlData } = supabaseAdmin.storage
-      .from('portfolio-images') // GANTI ini juga jika nama bucket berbeda
+      .from('portofolio-images') // GANTI ini juga jika nama bucket berbeda
       .getPublicUrl(fileName);
 
     // 3. Kembalikan URL publik ke halaman Admin
