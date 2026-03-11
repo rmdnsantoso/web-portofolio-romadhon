@@ -12,13 +12,57 @@ export default function ProfileForm({ profile }: { profile: any }) {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsPending(true);
-    const formData = new FormData(event.currentTarget);
-    await updateProfile(formData);
-    setIsPending(false);
     
-    // Panggil Toast menggantikan alert()
-    setToastMessage("IDENTITY MATRIX UPDATED.");
-    setShowToast(true);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      // 1. PROSES UPLOAD FOTO PROFIL (AVATAR)
+      const avatarFile = formData.get('avatarFile') as File;
+      if (avatarFile && avatarFile.size > 0) {
+        const avatarData = new FormData();
+        avatarData.append('file', avatarFile);
+
+        const res = await fetch('/api/upload', { method: 'POST', body: avatarData });
+        const data = await res.json();
+        
+        if (data.url) {
+          // Masukkan URL Supabase ke formData untuk dibaca Server Action
+          formData.set('avatarUrl', data.url); 
+        } else {
+          throw new Error("Gagal upload foto profil");
+        }
+      }
+
+      // 2. PROSES UPLOAD CV (PDF)
+      const resumeFile = formData.get('resumeFile') as File;
+      if (resumeFile && resumeFile.size > 0) {
+        const resumeData = new FormData();
+        resumeData.append('file', resumeFile);
+
+        const res = await fetch('/api/upload', { method: 'POST', body: resumeData });
+        const data = await res.json();
+        
+        if (data.url) {
+          // Masukkan URL Supabase ke formData untuk dibaca Server Action
+          formData.set('resumeUrl', data.url); 
+        } else {
+          throw new Error("Gagal upload CV");
+        }
+      }
+
+      // 3. KIRIM DATA KE SERVER ACTION (DATABASE)
+      await updateProfile(formData);
+      
+      setToastMessage("IDENTITY MATRIX UPDATED.");
+      setShowToast(true);
+    } catch (error: any) {
+      console.error("Update Error:", error);
+      setToastMessage("ERROR: " + (error.message || "SYNC FAILED."));
+      setShowToast(true);
+    } finally {
+      setIsPending(false);
+    }
   }
 
   return (

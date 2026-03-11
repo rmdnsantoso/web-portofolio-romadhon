@@ -11,28 +11,57 @@ export default function BannerManager({ banners }: { banners: any[] }) {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  // Handler 1: Tambah Banner
+  // Handler 1: Tambah Banner (DENGAN SUPABASE UPLOAD)
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsPending(true);
     
     const form = event.currentTarget; 
     const formData = new FormData(form);
-    
-    await createBanner(formData);
-    form.reset(); 
-    setIsPending(false);
 
-    // Panggil Toast
-    setToastMessage("NEW BANNER DEPLOYED.");
-    setShowToast(true);
+    try {
+      // --- CEGAT FILE GAMBAR BANNER ---
+      const imageFile = formData.get('imageFile') as File;
+
+      if (imageFile && imageFile.size > 0) {
+        const uploadData = new FormData();
+        uploadData.append('file', imageFile);
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadData,
+        });
+
+        const data = await res.json();
+
+        if (data.url) {
+          // Ganti input 'imageUrl' dengan link asli dari Supabase
+          formData.set('imageUrl', data.url);
+        } else {
+          throw new Error("Gagal mengunggah banner ke cloud.");
+        }
+      }
+
+      // Kirim data yang sudah berisi URL Supabase ke Server Action
+      await createBanner(formData);
+      
+      form.reset(); 
+      setToastMessage("NEW BANNER DEPLOYED.");
+      setShowToast(true);
+    } catch (error: any) {
+      console.error("Banner Error:", error);
+      setToastMessage("ERROR: " + (error.message || "DEPLOY FAILED."));
+      setShowToast(true);
+    } finally {
+      setIsPending(false);
+    }
   }
 
   // Handler 2: Hapus Banner
   async function handleDeleteBanner(id: string) {
     if (confirm("Delete this banner?")) {
       await deleteBanner(id);
-      setToastMessage("BANNER REMOVED SECURELY.");
+      setToastMessage("SYSTEM ALERT: BANNER REMOVED."); // Mengandung kata 'REMOVED' (merah)
       setShowToast(true);
     }
   }
@@ -62,7 +91,12 @@ export default function BannerManager({ banners }: { banners: any[] }) {
             
             <div className="flex flex-col gap-2">
               <span className="text-[9px] text-beige-200/40">1: Upload File (JPG/PNG)</span>
-              <input type="file" name="imageFile" accept="image/png, image/jpeg, image/webp" className="text-xs text-beige-100 file:mr-4 file:py-1.5 file:px-3 file:rounded-sm file:border-0 file:text-[10px] file:uppercase file:tracking-widest file:font-medium file:bg-beige-100 file:text-navy-900 hover:file:bg-white transition-colors cursor-pointer" />
+              <input 
+                type="file" 
+                name="imageFile" 
+                accept="image/png, image/jpeg, image/webp" 
+                className="text-xs text-beige-100 file:mr-4 file:py-1.5 file:px-3 file:rounded-sm file:border-0 file:text-[10px] file:uppercase file:tracking-widest file:font-medium file:bg-beige-100 file:text-navy-900 hover:file:bg-white transition-colors cursor-pointer" 
+              />
             </div>
 
             <div className="flex items-center gap-4">
@@ -73,7 +107,12 @@ export default function BannerManager({ banners }: { banners: any[] }) {
 
             <div className="flex flex-col gap-2">
               <span className="text-[9px] text-beige-200/40">2: Paste Image URL</span>
-              <input type="url" name="imageUrl" placeholder="https://..." className="bg-navy-800/50 border border-beige-200/20 rounded-sm px-4 py-3 text-beige-100 focus:outline-none focus:border-beige-100 transition-colors" />
+              <input 
+                type="url" 
+                name="imageUrl" 
+                placeholder="https://..." 
+                className="bg-navy-800/50 border border-beige-200/20 rounded-sm px-4 py-3 text-beige-100 focus:outline-none focus:border-beige-100 transition-colors" 
+              />
             </div>
           </div>
 
@@ -103,7 +142,6 @@ export default function BannerManager({ banners }: { banners: any[] }) {
                       {b.isActive ? "ONLINE" : "OFFLINE"}
                     </span>
                     
-                    {/* Tombol Hapus memanggil handler baru */}
                     <button onClick={() => handleDeleteBanner(b.id)} className="text-red-400/50 hover:text-red-400 bg-navy-900/50 hover:bg-navy-900 p-2 rounded-sm transition-all">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>
@@ -111,7 +149,6 @@ export default function BannerManager({ banners }: { banners: any[] }) {
                   
                   <div>
                     <h4 className="text-xl font-serif text-beige-100 mb-3">{b.title}</h4>
-                    {/* Tombol Sakelar memanggil handler baru */}
                     <button 
                       onClick={() => handleToggleBanner(b.id, b.isActive)}
                       className="text-[10px] tracking-widest uppercase border border-beige-200/20 hover:bg-beige-100 hover:text-navy-900 text-beige-100 px-4 py-2 transition-colors backdrop-blur-sm"
