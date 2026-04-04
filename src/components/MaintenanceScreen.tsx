@@ -60,10 +60,9 @@ export default function MaintenanceScreen() {
   const seconds = time?.getSeconds().toString().padStart(2, '0') || "00";
 
   return (
-
     <main className="min-h-screen bg-navy-900 flex flex-col items-center justify-center relative overflow-hidden text-beige-100 cursor-default select-none px-6">
       
-    <SecretEasterEgg />
+      <SecretEasterEgg />
 
       {/* Background Soft Glow */}
       <div className="absolute inset-0 z-0 flex items-center justify-center opacity-20 pointer-events-none">
@@ -72,38 +71,29 @@ export default function MaintenanceScreen() {
 
       <div className={`flex flex-col items-center z-10 w-full transition-opacity duration-1000 ${isPlaying && !gameOver ? "opacity-5 pointer-events-none" : "opacity-100"}`}>
         
-        {/* Teks Elegan Atas */}
-        <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif tracking-wide text-beige-100 mb-8 md:mb-12 text-center drop-shadow-lg">
+        {/* Teks Elegan Atas (Tipis & Ramping) */}
+        <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif font-light tracking-wide text-beige-100 mb-8 md:mb-12 text-center drop-shadow-lg">
           Refining Experience.
         </h1>
 
-        {/* --- JAM SINEAMATIK RAKSASA (SIMETRIS) --- */}
-        <div className="flex items-center justify-center font-serif text-beige-100 drop-shadow-[0_0_40px_rgba(245,245,220,0.15)] my-2">
+        {/* --- JAM SINEAMATIK RAKSASA (Font Tipis / Light) --- */}
+        <div className="flex items-center justify-center font-serif font-light text-beige-100 drop-shadow-[0_0_40px_rgba(245,245,220,0.15)] my-2">
           
-          {/* Jam */}
           <span className="text-6xl md:text-[9rem] lg:text-[12rem] leading-none tracking-tight">{hours}</span>
-          
-          {/* Pemisah 1 */}
           <span className="text-4xl md:text-[6rem] lg:text-[8rem] leading-none text-beige-200/30 animate-pulse mx-2 md:mx-6 mb-2 md:mb-8">:</span>
-          
-          {/* Menit */}
           <span className="text-6xl md:text-[9rem] lg:text-[12rem] leading-none tracking-tight">{minutes}</span>
-          
-          {/* Pemisah 2 */}
           <span className="text-4xl md:text-[6rem] lg:text-[8rem] leading-none text-beige-200/30 animate-pulse mx-2 md:mx-6 mb-2 md:mb-8">:</span>
-          
-          {/* Detik (Sama Besar) */}
           <span className="text-6xl md:text-[9rem] lg:text-[12rem] leading-none tracking-tight text-beige-100/90">{seconds}</span>
           
         </div>
 
-        {/* Teks Keterangan Bawah */}
-        <p className="mt-8 md:mt-12 text-beige-200/60 tracking-widest uppercase text-xs md:text-sm text-center max-w-lg leading-relaxed">
+        {/* Teks Keterangan Bawah (Dibuat Solid, Normal-case, & Lebih Terang) */}
+        <p className="mt-8 md:mt-12 font-light normal-case text-beige-200/80 text-sm md:text-base text-center max-w-lg leading-relaxed">
           Overthinking the pixel alignments so you don't have to. <br className="hidden md:block" /> Normal operations will resume shortly.
         </p>
         
-        {/* Petunjuk Easter Egg */}
-        <p className="mt-20 text-[10px] text-beige-200/30 uppercase tracking-[0.4em] transition-all">
+        {/* Petunjuk Easter Egg (Uppercase & Renggang agar Tajam/Tactical) */}
+        <p className="mt-20 text-[10px] uppercase text-beige-200/40 tracking-[0.4em] font-medium transition-all">
           {gameOver ? `CALIBRATION COMPLETE - SCORE: ${score}` : "[ PRESS SPACE TO PASS THE TIME ]"}
         </p>
       </div>
