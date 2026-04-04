@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link"; // L kecil ya!
+import Link from "next/link"; 
 import { useSearchParams } from "next/navigation";
 import LogoutButton from "./LogoutButton";
 
@@ -42,7 +42,7 @@ export default function AdminSidebar() {
           
           <Link 
             href="/admin?tab=dashboard" 
-            onClick={() => setIsMobileMenuOpen(false)} // Otomatis tutup menu HP saat diklik
+            onClick={() => setIsMobileMenuOpen(false)} 
             className={`transition-colors ${activeTab === "dashboard" ? "text-beige-100 font-medium" : "hover:text-beige-100"}`}
           >
             Dashboard
@@ -54,6 +54,15 @@ export default function AdminSidebar() {
             className={`transition-colors ${activeTab === "profile" ? "text-beige-100 font-medium" : "hover:text-beige-100"}`}
           >
             Resume & Profile
+          </Link>
+
+          {/* TAB BARU: ACHIEVEMENTS */}
+          <Link 
+            href="/admin?tab=achievements" 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={`transition-colors ${activeTab === "achievements" ? "text-beige-100 font-medium" : "hover:text-beige-100"}`}
+          >
+            Achievements
           </Link>
           
           <Link 

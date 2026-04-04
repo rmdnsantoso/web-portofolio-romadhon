@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import HeroSection from "@/components/HeroSection";
 import ProjectSection from "@/components/ProjectSection";
+import AchievementSection from "@/components/AchievementSection"; // <-- IMPORT BARU
 import AboutSection from "@/components/AboutSection";
 import TechStackSection from "@/components/TechStackSection";
 import TerminalContact from "@/components/TerminalContact";
@@ -8,7 +9,7 @@ import Footer from "@/components/Footer";
 import SecretEasterEgg from "@/components/SecretEasterEgg";
 import MaintenanceScreen from "@/components/MaintenanceScreen";
 import ScrollReveal from "@/components/ScrollReveal";
-import Navbar from "@/components/Navbar"; // Pastikan Navbar di-import di sini
+import Navbar from "@/components/Navbar"; 
 
 export default async function Home() {
   // Ambil status profil dan maintenance dari database
@@ -51,6 +52,11 @@ export default async function Home() {
           <ProjectSection />
         </ScrollReveal>
         
+        {/* --- ACHIEVEMENTS MUNCUL DI SINI --- */}
+        <ScrollReveal>
+          <AchievementSection />
+        </ScrollReveal>
+
         <ScrollReveal>
           <div className="w-full relative z-10 bg-navy-900">
             <AboutSection />

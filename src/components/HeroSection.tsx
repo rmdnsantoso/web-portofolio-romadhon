@@ -53,7 +53,7 @@ export default async function HeroSection() {
                    <img 
                      src={img} 
                      alt={`Hero Banner ${idx}`} 
-                     className="w-full h-full object-cover" 
+                     className="w-full h-full object-cover pointer-events-none" 
                    />
                  </div>
                ))}
@@ -79,9 +79,18 @@ export default async function HeroSection() {
           Hello, I'm <strong className="font-medium text-white">{name}</strong>. Bridging complex logic with elegant design, I build scalable web ecosystems and intuitive interfaces that solve real-world problems.
         </p>
         
-        <a href="#project" className="px-8 py-4 border border-beige-200/50 text-beige-100 hover:bg-beige-100 hover:text-navy-900 transition-all duration-500 rounded-sm tracking-widest text-xs uppercase group backdrop-blur-sm shadow-lg shadow-black/20">
+        {/* TOMBOL RESPONSIVE (DENGAN EFEK SENTUH MOBILE) */}
+        <a 
+          href="#project" 
+          className="
+            px-8 py-4 border border-beige-200/50 rounded-sm tracking-widest text-xs uppercase group backdrop-blur-sm shadow-lg shadow-black/20
+            text-beige-100 transition-all duration-500 outline-none select-none
+            md:hover:bg-beige-100 md:hover:text-navy-900 
+            active:bg-beige-100 active:text-navy-900 active:scale-95
+          "
+        >
           Explore Selected Works 
-          <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform duration-300">→</span>
+          <span className="inline-block ml-2 md:group-hover:translate-x-1 group-active:translate-x-1 transition-transform duration-300">→</span>
         </a>
       </div>
     </section>

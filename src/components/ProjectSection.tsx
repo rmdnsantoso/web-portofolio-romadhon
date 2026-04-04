@@ -24,7 +24,17 @@ export default async function ProjectSection() {
         // Grid Galeri Proyek
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           {projects.map((project) => (
-            <div key={project.id} className="group relative flex flex-col border border-beige-200/10 bg-navy-800/30 rounded-sm overflow-hidden hover:border-beige-200/30 hover:bg-navy-800/50 transition-all duration-500 shadow-lg shadow-black/20">
+            <div 
+              key={project.id} 
+              tabIndex={0} 
+              className="
+                group relative flex flex-col border border-beige-200/10 bg-navy-800/30 rounded-sm overflow-hidden 
+                md:hover:border-beige-200/30 md:hover:bg-navy-800/50 
+                active:border-beige-200/40 active:bg-navy-800/60 active:scale-[0.98]
+                transition-all duration-500 shadow-lg shadow-black/20
+                outline-none select-none
+              "
+            >
               
               {/* Gambar Proyek (Thumbnail) */}
               <div className="w-full aspect-video overflow-hidden bg-navy-900 relative">
@@ -32,7 +42,12 @@ export default async function ProjectSection() {
                   <img 
                     src={project.imageUrl} 
                     alt={project.title} 
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+                    className="
+                      w-full h-full object-cover opacity-80 
+                      md:group-hover:opacity-100 md:group-hover:scale-105 
+                      group-active:opacity-100 group-active:scale-105
+                      transition-all duration-700
+                    "
                   />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-beige-200/20 text-[10px] tracking-widest uppercase">
@@ -48,10 +63,10 @@ export default async function ProjectSection() {
 
               {/* Detail Konten Proyek */}
               <div className="p-8 flex flex-col flex-grow">
-                <h3 className="text-2xl font-serif text-beige-100 mb-4 group-hover:text-white transition-colors">
+                <h3 className="text-2xl font-serif text-beige-100 mb-4 md:group-hover:text-white group-active:text-white transition-colors">
                   {project.title}
                 </h3>
-                <p className="text-sm text-beige-200/70 font-light leading-relaxed mb-8 flex-grow">
+                <p className="text-sm text-beige-200/70 font-light leading-relaxed mb-8 flex-grow text-justify">
                   {project.description}
                 </p>
                 

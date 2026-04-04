@@ -4,6 +4,7 @@ import ProjectRowActions from "@/components/ProjectRowActions";
 import AdminSidebar from "@/components/AdminSidebar";
 import ProfileForm from "@/components/ProfileForm";
 import BannerManager from "@/components/BannerManager";
+import AchievementManager from "@/components/AchievementManager"; // <-- IMPORT BARU
 import DigitalClock from "@/components/DigitalClock";
 import { toggleMaintenance } from "@/app/admin/actions";
 
@@ -16,20 +17,25 @@ export default async function AdminDashboard({
   const resolvedParams = await searchParams;
   const activeTab = resolvedParams.tab || "dashboard";
 
-  // 1. Ambil data project (Kurung sudah diperbaiki)
+  // 1. Ambil data project 
   const projects = await prisma.project.findMany({
     orderBy: { createdAt: 'desc' } 
   });
 
-  // 2. Ambil data profil tunggal (Kurung sudah rapi)
+  // 2. Ambil data profil tunggal 
   const profile = await prisma.profile.findUnique({
     where: { id: "woozie-admin" }
   });
 
   // 3. Ambil data Banner
-const banners = await prisma.banner.findMany({
-  orderBy: { createdAt: 'desc' }
-});
+  const banners = await prisma.banner.findMany({
+    orderBy: { createdAt: 'desc' }
+  });
+
+  // 4. Ambil data Achievement (BARU)
+  const achievements = await prisma.achievement.findMany({
+    orderBy: { createdAt: 'desc' }
+  });
 
   return (
     <div className="h-screen bg-navy-900 text-beige-100 flex flex-col md:flex-row font-sans overflow-hidden">
@@ -125,13 +131,27 @@ const banners = await prisma.banner.findMany({
               <h1 className="text-2xl md:text-4xl font-serif tracking-wide">Resume & Profile.</h1>
             </header>
             
-            {/* Form Profil Dipanggil Di Sini */}
             <ProfileForm profile={profile} />
           </div>
         )}
 
         {/* ========================================= */}
-        {/* TAB 3: SETTINGS */}
+        {/* TAB 3: ACHIEVEMENTS (TAB BARU WOOZIE!) */}
+        {/* ========================================= */}
+        {activeTab === "achievements" && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <header className="mb-12">
+              <p className="text-xs text-beige-200/50 tracking-[0.2em] uppercase mb-2">Hall of Fame</p>
+              <h1 className="text-2xl md:text-4xl font-serif tracking-wide">Achievements.</h1>
+            </header>
+            
+            {/* Langsung panggil komponennya di sini */}
+            <AchievementManager achievements={achievements} />
+          </div>
+        )}
+
+        {/* ========================================= */}
+        {/* TAB 4: SETTINGS */}
         {/* ========================================= */}
         {activeTab === "settings" && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -151,7 +171,6 @@ const banners = await prisma.banner.findMany({
               </button>
             </form>
           </div>
-            {/* Langsung panggil komponennya di sini tanpa bungkus p/div dashed */}
             <BannerManager banners={banners} />
 
           </div>

@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "Romadhon | Web Portofolio",
-  description: "Portofolio Muhammad Romadhon Santoso",
+  // Pilih salah satu title yang paling sesuai dengan kepribadianmu!
+  title: "Romadhon | Fullstack Developer & Part-Time Overthinker",
+  
+  // Deskripsi yang lebih elegan, profesional, dan SEO-friendly
+  description: "Digital ecosystem architect. Bridging complex logic with elegant design, powered by Next.js, late-night coffee, and zero sleep.",
+  
+  // Bonus: Tambahan warna tema untuk browser HP (opsional tapi bikin keren)
+  themeColor: "#080c16", 
 };
 
 export default function RootLayout({

@@ -118,3 +118,51 @@ export async function toggleMaintenance(currentStatus: boolean) {
   revalidatePath("/");
   revalidatePath("/admin");
 }
+
+// --- FUNGSI CRUD ACHIEVEMENTS ---
+export async function createAchievement(formData: FormData) {
+  const title = formData.get("title") as string;
+  const issuer = formData.get("issuer") as string;
+  const year = formData.get("year") as string;
+  const description = formData.get("description") as string;
+  const imageUrl = formData.get("imageUrl") as string;
+
+  await prisma.achievement.create({
+    data: {
+      title,
+      issuer,
+      year,
+      description: description || null,
+      imageUrl: imageUrl || null,
+    },
+  });
+  revalidatePath("/admin");
+  revalidatePath("/");
+}
+
+export async function updateAchievement(id: string, formData: FormData) {
+  const title = formData.get("title") as string;
+  const issuer = formData.get("issuer") as string;
+  const year = formData.get("year") as string;
+  const description = formData.get("description") as string;
+  const imageUrl = formData.get("imageUrl") as string;
+
+  await prisma.achievement.update({
+    where: { id },
+    data: {
+      title,
+      issuer,
+      year,
+      description: description || null,
+      imageUrl: imageUrl || null,
+    },
+  });
+  revalidatePath("/admin");
+  revalidatePath("/");
+}
+
+export async function deleteAchievement(id: string) {
+  await prisma.achievement.delete({ where: { id } });
+  revalidatePath("/admin");
+  revalidatePath("/");
+}

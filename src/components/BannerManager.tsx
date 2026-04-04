@@ -11,6 +11,10 @@ export default function BannerManager({ banners }: { banners: any[] }) {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
+  // State khusus untuk Custom Modal Delete
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // Handler 1: Tambah Banner (DENGAN SUPABASE UPLOAD)
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,12 +61,22 @@ export default function BannerManager({ banners }: { banners: any[] }) {
     }
   }
 
-  // Handler 2: Hapus Banner
-  async function handleDeleteBanner(id: string) {
-    if (confirm("Delete this banner?")) {
-      await deleteBanner(id);
-      setToastMessage("SYSTEM ALERT: BANNER REMOVED."); // Mengandung kata 'REMOVED' (merah)
+  // Handler 2: Eksekusi Hapus Banner (Dari Modal)
+  async function confirmDelete() {
+    if (!deletingId) return;
+    setIsDeleting(true);
+
+    try {
+      await deleteBanner(deletingId);
+      setToastMessage("SYSTEM ALERT: BANNER REMOVED."); 
       setShowToast(true);
+    } catch (error) {
+      console.error("Delete Error:", error);
+      setToastMessage("ERROR: FAILED TO REMOVE BANNER.");
+      setShowToast(true);
+    } finally {
+      setIsDeleting(false);
+      setDeletingId(null); // Tutup modal
     }
   }
 
@@ -142,7 +156,11 @@ export default function BannerManager({ banners }: { banners: any[] }) {
                       {b.isActive ? "ONLINE" : "OFFLINE"}
                     </span>
                     
-                    <button onClick={() => handleDeleteBanner(b.id)} className="text-red-400/50 hover:text-red-400 bg-navy-900/50 hover:bg-navy-900 p-2 rounded-sm transition-all">
+                    {/* TOMBOL DELETE (MEMICU MODAL) */}
+                    <button 
+                      onClick={() => setDeletingId(b.id)} 
+                      className="text-red-400/50 hover:text-red-400 bg-navy-900/50 hover:bg-navy-900 p-2 rounded-sm transition-all border border-transparent hover:border-red-500/30"
+                    >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>
                   </div>
@@ -162,6 +180,37 @@ export default function BannerManager({ banners }: { banners: any[] }) {
           </div>
         )}
       </div>
+
+      {/* --- CUSTOM MODAL KONFIRMASI DELETE --- */}
+      {deletingId && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+          <div className="bg-[#0A101D] border border-beige-200/10 p-8 rounded-sm max-w-sm w-full text-center shadow-2xl transform transition-all">
+            <h3 className="text-beige-100 text-lg font-serif mb-2 tracking-widest uppercase">
+              Terminate Banner?
+            </h3>
+            <p className="text-beige-200/50 text-[11px] mb-8 leading-relaxed font-light tracking-wide">
+              This action is irreversible. The banner will be permanently removed from the active rotation sequence.
+            </p>
+            
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setDeletingId(null)}
+                disabled={isDeleting}
+                className="px-6 py-2.5 text-[10px] tracking-widest uppercase font-medium text-beige-200/60 bg-transparent border border-beige-200/20 rounded-sm hover:bg-beige-200/10 hover:text-beige-100 transition disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={isDeleting}
+                className="px-6 py-2.5 text-[10px] tracking-widest uppercase font-medium text-red-400 bg-red-900/20 border border-red-500/30 rounded-sm hover:bg-red-500/20 hover:text-red-300 transition flex items-center gap-2 disabled:opacity-50"
+              >
+                {isDeleting ? "Processing..." : "Confirm"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SPEAKER TOAST BANNER MANAGER */}
       <ToastNotification 

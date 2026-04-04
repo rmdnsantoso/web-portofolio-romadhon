@@ -15,10 +15,26 @@ export default function ProjectRowActions({ project }: { project: ProjectData })
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  // Eksekusi Hapus dengan Konfirmasi
-  async function handleDelete() {
-    if (confirm(`Warning: Are you sure you want to delete "${project.title}"?`)) {
+  // State khusus untuk Modal Delete
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Eksekusi Hapus dari Modal Custom
+  async function confirmDelete() {
+    setIsDeleting(true);
+    try {
       await deleteProject(project.id);
+      // Catatan: Jika revalidatePath langsung memusnahkan baris ini dari DOM, 
+      // Toast mungkin tidak sempat terlihat, tapi secara fungsi data sudah terhapus.
+      setToastMessage("SYSTEM ALERT: PROJECT PURGED.");
+      setShowToast(true);
+    } catch (error) {
+      console.error("Delete Error:", error);
+      setToastMessage("ERROR: FAILED TO DELETE PROJECT.");
+      setShowToast(true);
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false); // Tutup modal
     }
   }
 
@@ -39,7 +55,9 @@ export default function ProjectRowActions({ project }: { project: ProjectData })
   return (
     <>
       <button onClick={() => setIsEditOpen(true)} className="hover:text-beige-100 tracking-widest uppercase text-[10px] mr-6 transition-colors">Edit</button>
-      <button onClick={handleDelete} className="hover:text-red-400 tracking-widest uppercase text-[10px] text-red-400/50 transition-colors">Delete</button>
+      
+      {/* Tombol Delete sekarang HANYA membuka modal, BUKAN langsung menghapus */}
+      <button onClick={() => setIsDeleteModalOpen(true)} className="hover:text-red-400 tracking-widest uppercase text-[10px] text-red-400/50 transition-colors">Delete</button>
 
       {/* --- PANEL EDIT (Muncul saat tombol Edit diklik) --- */}
       {isEditOpen && (
@@ -101,6 +119,39 @@ export default function ProjectRowActions({ project }: { project: ProjectData })
           </form>
         </div>
       </div>
+
+      {/* --- CUSTOM MODAL KONFIRMASI DELETE --- */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+          <div className="bg-[#0A101D] border border-beige-200/10 p-8 rounded-sm max-w-sm w-full text-center shadow-2xl transform transition-all">
+            <h3 className="text-beige-100 text-lg font-serif mb-2 tracking-widest uppercase">
+              Purge Project?
+            </h3>
+            <p className="text-beige-200/50 text-[11px] mb-8 leading-relaxed font-light tracking-wide">
+              This action is irreversible. <br/>
+              <span className="text-beige-100 font-medium tracking-normal mt-1 block">"{project.title}"</span> 
+              will be permanently erased from the database.
+            </p>
+            
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                disabled={isDeleting}
+                className="px-6 py-2.5 text-[10px] tracking-widest uppercase font-medium text-beige-200/60 bg-transparent border border-beige-200/20 rounded-sm hover:bg-beige-200/10 hover:text-beige-100 transition disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={isDeleting}
+                className="px-6 py-2.5 text-[10px] tracking-widest uppercase font-medium text-red-400 bg-red-900/20 border border-red-500/30 rounded-sm hover:bg-red-500/20 hover:text-red-300 transition flex items-center gap-2 disabled:opacity-50"
+              >
+                {isDeleting ? "Purging..." : "Confirm"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SPEAKER TOAST PROJECT EDIT */}
       <ToastNotification 

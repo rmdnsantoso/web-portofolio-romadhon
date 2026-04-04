@@ -99,7 +99,7 @@ export default function MaintenanceScreen() {
 
         {/* Teks Keterangan Bawah */}
         <p className="mt-8 md:mt-12 text-beige-200/60 tracking-widest uppercase text-xs md:text-sm text-center max-w-lg leading-relaxed">
-          Arsitektur digital sedang dalam tahap penyempurnaan. <br className="hidden md:block" /> Harap kembali beberapa saat lagi.
+          Overthinking the pixel alignments so you don't have to. <br className="hidden md:block" /> Normal operations will resume shortly.
         </p>
         
         {/* Petunjuk Easter Egg */}

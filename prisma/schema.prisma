@@ -47,3 +47,14 @@ model Banner {
   isActive    Boolean  @default(true) // Sakelar untuk mematikan/menyalakan banner
   createdAt   DateTime @default(now())
 }
+
+// --- TABEL BARU UNTUK PENGHARGAAN ---
+model Achievement {
+  id          String   @id @default(cuid())
+  title       String   
+  issuer      String   
+  year        String   
+  description String?  
+  imageUrl    String?  
+  createdAt   DateTime @default(now())
+}
