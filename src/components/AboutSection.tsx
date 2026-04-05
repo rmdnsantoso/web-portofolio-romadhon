@@ -27,23 +27,27 @@ export default async function AboutSection() {
         
         {/* KIRI: Foto Profil */}
         {/* Sihir CSS: tabIndex={0} mengaktifkan state :active di iOS Safari tanpa JavaScript */}
+        {/* Tambahan [-webkit-touch-callout:none] mematikan menu pop-up bawaan iOS/Android */}
         <div 
           tabIndex={0} 
-          className="w-full md:w-1/3 shrink-0 relative group cursor-pointer outline-none select-none"
+          className="w-full md:w-1/3 shrink-0 relative group cursor-pointer outline-none select-none [-webkit-touch-callout:none]"
         >
           <div className="aspect-square relative rounded-sm overflow-hidden border border-beige-200/10 bg-navy-800/50">
             {avatarUrl ? (
               <img 
                 src={avatarUrl} 
                 alt={name} 
+                draggable={false} // Mencegah gambar diseret
                 className="
                   w-full h-full object-cover 
                   grayscale opacity-80 
                   md:group-hover:grayscale-0 md:group-hover:opacity-100 
-                  group-active:grayscale-0 group-active:opacity-100 
-                  transition-all duration-700 
-                  group-active:delay-[500ms]
+                  group-active:grayscale-0 group-active:opacity-100 group-active:scale-95
+                  transition-all duration-500 
+                  pointer-events-none 
                 " 
+                /* pointer-events-none adalah kunci! Ini membuat browser "buta" 
+                   dan tidak sadar kalau ini adalah gambar saat disentuh jari */
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-beige-200/20">
@@ -51,8 +55,8 @@ export default async function AboutSection() {
               </div>
             )}
           </div>
-          {/* Ornamen Bingkai Kanan Bawah */}
-          <div className="absolute -bottom-4 -right-4 w-24 h-24 border-b border-r border-beige-200/20 transition-transform md:group-hover:translate-x-2 md:group-hover:translate-y-2 group-active:translate-x-2 group-active:translate-y-2 group-active:delay-[500ms]"></div>
+          {/* Ornamen Bingkai Kanan Bawah (Delay dihilangkan agar langsung merespons tap) */}
+          <div className="absolute -bottom-4 -right-4 w-24 h-24 border-b border-r border-beige-200/20 transition-transform md:group-hover:translate-x-2 md:group-hover:translate-y-2 group-active:translate-x-2 group-active:translate-y-2"></div>
         </div>
 
         {/* KANAN: Data Teks & Resume */}

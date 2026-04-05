@@ -18,14 +18,22 @@ export default function MaintenanceScreen() {
     return () => clearInterval(timer);
   }, []);
 
-  // Deteksi tombol spasi untuk memulai Easter Egg
+  // FUNGSI BARU: Untuk memulai game (bisa dipanggil dari Spasi PC atau Tap HP)
+  const startGame = () => {
+    if (!isPlaying) {
+      setIsPlaying(true);
+      setScore(0);
+      setGameOver(false);
+      setAnomalies([]);
+    }
+  };
+
+  // Deteksi tombol spasi untuk memulai Easter Egg di PC
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space" && !isPlaying) {
-        setIsPlaying(true);
-        setScore(0);
-        setGameOver(false);
-        setAnomalies([]);
+        e.preventDefault(); // Mencegah layar scroll ke bawah
+        startGame();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -92,9 +100,18 @@ export default function MaintenanceScreen() {
           Overthinking the pixel alignments so you don't have to. <br className="hidden md:block" /> Normal operations will resume shortly.
         </p>
         
-        {/* Petunjuk Easter Egg (Uppercase & Renggang agar Tajam/Tactical) */}
-        <p className="mt-20 text-[10px] uppercase text-beige-200/40 tracking-[0.4em] font-medium transition-all">
-          {gameOver ? `CALIBRATION COMPLETE - SCORE: ${score}` : "[ PRESS SPACE TO PASS THE TIME ]"}
+        {/* Petunjuk Easter Egg (DIBUAT BISA DI-TAP UNTUK MOBILE) */}
+        <p 
+          onClick={startGame}
+          className={`
+            mt-20 text-[10px] uppercase text-beige-200/40 tracking-[0.4em] font-medium transition-all
+            ${!isPlaying && !gameOver ? "cursor-pointer active:scale-95 active:text-beige-100 md:hover:text-beige-100" : ""}
+          `}
+        >
+          {gameOver 
+            ? `CALIBRATION COMPLETE - SCORE: ${score}` 
+            : "[ PRESS SPACE OR TAP HERE ]"
+          }
         </p>
       </div>
 
@@ -103,13 +120,13 @@ export default function MaintenanceScreen() {
         <div 
           key={a.id}
           onClick={() => catchAnomaly(a.id)}
-          className="absolute z-20 w-16 h-16 md:w-20 md:h-20 flex items-center justify-center cursor-pointer hover:scale-110 transition-all duration-300 group"
+          className="absolute z-20 w-16 h-16 md:w-20 md:h-20 flex items-center justify-center cursor-pointer active:scale-90 md:hover:scale-110 transition-all duration-300 group"
           style={{ left: `${a.left}%`, top: `${a.top}%` }}
         >
           {/* Lingkaran luar glowing */}
-          <div className="absolute inset-0 rounded-full border border-beige-200/10 bg-beige-200/5 shadow-[0_0_20px_rgba(245,245,220,0.15)] group-hover:bg-beige-200/20 group-hover:border-beige-200/40 transition-all backdrop-blur-sm"></div>
+          <div className="absolute inset-0 rounded-full border border-beige-200/10 bg-beige-200/5 shadow-[0_0_20px_rgba(245,245,220,0.15)] group-hover:bg-beige-200/20 group-hover:border-beige-200/40 transition-all backdrop-blur-sm pointer-events-none"></div>
           {/* Inti Cahaya */}
-          <div className="w-3 h-3 rounded-full bg-beige-100 shadow-[0_0_10px_rgba(245,245,220,1)] group-hover:bg-white transition-colors"></div>
+          <div className="w-3 h-3 rounded-full bg-beige-100 shadow-[0_0_10px_rgba(245,245,220,1)] group-hover:bg-white transition-colors pointer-events-none"></div>
         </div>
       ))}
 
