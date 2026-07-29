@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { createProject } from "@/app/admin/actions";
 import ToastNotification from "./ToastNotification";
 
 export default function ProjectFormPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  function handleClose() {
+    setIsOpen(false);
+    formRef.current?.reset();
+  }
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -47,9 +53,9 @@ export default function ProjectFormPanel() {
         } else {
           throw new Error(uploadData.error || "Gagal upload");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Upload error:", error);
-        alert("Gagal mengunggah gambar ke server. Coba lagi.");
+        alert(`Gagal mengunggah gambar: ${error.message}`);
         setIsPending(false);
         return; // Hentikan proses simpan
       }
@@ -88,7 +94,7 @@ export default function ProjectFormPanel() {
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity"
-          onClick={() => setIsOpen(false)} 
+          onClick={handleClose} 
         />
       )}
 
@@ -102,15 +108,15 @@ export default function ProjectFormPanel() {
           <div className="flex justify-between items-center mb-12 border-b border-beige-200/10 pb-6">
             <h2 className="text-2xl font-serif text-beige-100">Add Project</h2>
             <button 
-              onClick={() => setIsOpen(false)}
-              className="text-beige-200/50 hover:text-beige-100 text-sm uppercase tracking-widest"
+              onClick={handleClose}
+              className="text-beige-200/50 hover:text-beige-100 text-sm uppercase tracking-widest px-4 py-2 -mr-4"
               type="button"
             >
               [ Close ]
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6 text-sm font-light">
+          <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-6 text-sm font-light">
             
             <div className="flex flex-col gap-2">
               <label className="text-xs tracking-widest uppercase text-beige-200/50">Project Title</label>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { deleteProject, updateProject } from "@/app/admin/actions";
 import ToastNotification from "./ToastNotification";
 
@@ -11,6 +11,12 @@ type ProjectData = {
 export default function ProjectRowActions({ project }: { project: ProjectData }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  function handleClose() {
+    setIsEditOpen(false);
+    formRef.current?.reset();
+  }
   
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -73,9 +79,9 @@ export default function ProjectRowActions({ project }: { project: ProjectData })
         } else {
           throw new Error(uploadData.error || "Gagal upload");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Upload error:", error);
-        setToastMessage("ERROR: GAGAL MENGUNGGAH GAMBAR KE SERVER.");
+        setToastMessage(`ERROR: GAGAL UPLOAD GAMBAR. ${error.message}`);
         setShowToast(true);
         setIsPending(false);
         return; 
@@ -106,16 +112,16 @@ export default function ProjectRowActions({ project }: { project: ProjectData })
 
       {/* --- PANEL EDIT (Muncul saat tombol Edit diklik) --- */}
       {isEditOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onClick={() => setIsEditOpen(false)} />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onClick={handleClose} />
       )}
       <div className={`fixed top-0 right-0 h-full w-full max-w-md bg-navy-900 border-l border-beige-200/10 shadow-2xl z-50 transform transition-transform duration-500 overflow-y-auto text-left ${isEditOpen ? "translate-x-0" : "translate-x-full"}`}>
         <div className="p-8">
           <div className="flex justify-between items-center mb-12 border-b border-beige-200/10 pb-6">
             <h2 className="text-2xl font-serif text-beige-100">Edit Project</h2>
-            <button onClick={() => setIsEditOpen(false)} className="text-beige-200/50 hover:text-beige-100 text-sm uppercase tracking-widest">[ Close ]</button>
+            <button type="button" onClick={handleClose} className="text-beige-200/50 hover:text-beige-100 text-sm uppercase tracking-widest px-4 py-2 -mr-4">[ Close ]</button>
           </div>
 
-          <form onSubmit={handleEdit} className="flex flex-col gap-6 text-sm font-light">
+          <form ref={formRef} onSubmit={handleEdit} className="flex flex-col gap-6 text-sm font-light">
             <div className="flex flex-col gap-2">
               <label className="text-xs tracking-widest uppercase text-beige-200/50">Project Title</label>
               <input type="text" name="title" defaultValue={project.title} required className="bg-navy-800/50 border border-beige-200/20 rounded-sm px-4 py-3 text-beige-100 focus:outline-none focus:border-beige-100 transition-colors" />
