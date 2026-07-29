@@ -28,6 +28,10 @@ export default function AchievementManager({ achievements }: { achievements: Ach
       // Cek apakah ada file gambar/sertifikat yang diupload
       const imageFile = formData.get('imageFile') as File;
       if (imageFile && imageFile.size > 0) {
+        if (imageFile.size > 4 * 1024 * 1024) {
+          throw new Error("FILE SIZE EXCEEDS 4MB LIMIT.");
+        }
+        
         const uploadData = new FormData();
         uploadData.append('file', imageFile);
 

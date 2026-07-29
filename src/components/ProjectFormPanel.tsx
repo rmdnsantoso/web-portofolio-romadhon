@@ -23,6 +23,12 @@ export default function ProjectFormPanel() {
 
     // Cek apakah user mengunggah file (ukurannya lebih dari 0 byte)
     if (imageFile && imageFile.size > 0) {
+      if (imageFile.size > 4 * 1024 * 1024) {
+        alert("Ukuran gambar melebihi batas 4MB. Silakan gunakan gambar yang lebih kecil.");
+        setIsPending(false);
+        return;
+      }
+
       const uploadFormData = new FormData();
       uploadFormData.append('file', imageFile);
 

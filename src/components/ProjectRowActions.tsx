@@ -42,14 +42,59 @@ export default function ProjectRowActions({ project }: { project: ProjectData })
   async function handleEdit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsPending(true);
-    const formData = new FormData(event.currentTarget);
-    await updateProject(project.id, formData);
-    setIsPending(false);
-    setIsEditOpen(false); // Tutup laci
     
-    // Munculkan Toast setelah laci tertutup
-    setToastMessage("PROJECT UPDATED SUCCESSFULLY.");
-    setShowToast(true);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    // --- MULAI: LOGIKA UPLOAD SUPABASE ---
+    const imageFile = formData.get('imageFile') as File;
+
+    if (imageFile && imageFile.size > 0) {
+      if (imageFile.size > 4 * 1024 * 1024) { // Batas 4MB
+        setToastMessage("ERROR: FILE SIZE EXCEEDS 4MB.");
+        setShowToast(true);
+        setIsPending(false);
+        return;
+      }
+
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', imageFile);
+
+      try {
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadFormData,
+        });
+        
+        const uploadData = await response.json();
+
+        if (uploadData.url) {
+          formData.set('imageUrl', uploadData.url);
+        } else {
+          throw new Error(uploadData.error || "Gagal upload");
+        }
+      } catch (error) {
+        console.error("Upload error:", error);
+        setToastMessage("ERROR: GAGAL MENGUNGGAH GAMBAR KE SERVER.");
+        setShowToast(true);
+        setIsPending(false);
+        return; 
+      }
+    }
+    // --- SELESAI: LOGIKA UPLOAD SUPABASE ---
+
+    try {
+      await updateProject(project.id, formData);
+      setIsEditOpen(false); // Tutup laci
+      setToastMessage("PROJECT UPDATED SUCCESSFULLY.");
+      setShowToast(true);
+    } catch (error) {
+      console.error("Update error:", error);
+      setToastMessage("ERROR: FAILED TO UPDATE PROJECT.");
+      setShowToast(true);
+    } finally {
+      setIsPending(false);
+    }
   }
 
   return (
